@@ -1,26 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {AppContext, AppState} from "./context";
+import {Login, User, Vesting} from "./Pages";
+import {Col, Container, Nav, Navbar, Row} from "react-bootstrap";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    const appState = AppState();
+
+    return (
+        <AppContext.Provider value={appState}>
+            <Container fluid={true} className={'m-0 p-0'}>
+            <Navbar expand="lg" className="bg-dark-subtle px-4">
+                <Nav>
+                    <Navbar.Brand href="#">WX Vesting</Navbar.Brand>
+                </Nav>
+                <Container fluid={true} className={'w-100 m-0 p-0 text-end'}>
+                    {appState.user == null ? <Login/> : <User/>}
+                </Container>
+            </Navbar>
+            </Container>
+            <Container>
+                { appState.user ? <Vesting/> : null }
+            </Container>
+        </AppContext.Provider>
+    );
 }
 
 export default App;
