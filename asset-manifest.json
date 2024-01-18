@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/vest/static/css/main.f96f07a4.css",
-    "main.js": "/vest/static/js/main.ac9934de.js",
+    "main.js": "/vest/static/js/main.230bbfa3.js",
     "static/js/787.5cf38f1f.chunk.js": "/vest/static/js/787.5cf38f1f.chunk.js",
     "index.html": "/vest/index.html",
     "main.f96f07a4.css.map": "/vest/static/css/main.f96f07a4.css.map",
-    "main.ac9934de.js.map": "/vest/static/js/main.ac9934de.js.map",
+    "main.230bbfa3.js.map": "/vest/static/js/main.230bbfa3.js.map",
     "787.5cf38f1f.chunk.js.map": "/vest/static/js/787.5cf38f1f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f96f07a4.css",
-    "static/js/main.ac9934de.js"
+    "static/js/main.230bbfa3.js"
   ]
 }
