@@ -6,22 +6,21 @@ import {evaluate} from "../../Utils";
 
 export type TVestingState = {
     toClaim: number;
-    totalVesting: number;
+    reamainAmount: number;
     claimed: number;
     locked: number;
     unlocked: number;
     vestings: Array<{
-        totalAmount: number;
+        reamainAmount: number;
         locked: number;
         unlocked: number;
         height: number;
-        claimed: number;
     }>;
 };
 
 const defaultState = {
     toClaim: 0,
-    totalVesting: 0,
+    reamainAmount: 0,
     claimed: 0,
     locked: 0,
     unlocked: 0,
@@ -29,7 +28,7 @@ const defaultState = {
 } as TVestingState;
 
 export const Vesting = ({ ...props }) => {
-    const { user, nodeUrl, vestingContract, isLogin} = useContext(AppContext);
+    const { user, nodeUrl, vestingContract, isLogin, claimWX} = useContext(AppContext);
 
     const [isLoading, setIsLoading] = useState(true);
     const [state, setState] = useState<TVestingState>(defaultState);
@@ -43,7 +42,7 @@ export const Vesting = ({ ...props }) => {
             let {result} = await evaluate(nodeUrl, vestingContract, {expr: `userInfoREADONLY("${user}")`});
             const toClaim = result.value['_2'].value['_1'].value || 0;
             const {
-                totalVesting,
+                reamainAmount,
                 claimed,
                 locked,
                 unlocked,
@@ -51,25 +50,22 @@ export const Vesting = ({ ...props }) => {
             } = result.value['_2'].value['_3'].value.reduce((acc: any, {value = []}: any) => {
                 const [totalAmount, height, unlocked, locked] = value;
                 const vesting = {
-                    totalAmount: Number(totalAmount.value) || 0,
+                    totalReaminAmount: Number(totalAmount.value) || 0,
                     locked: Number(locked.value) || 0,
                     unlocked: Number(unlocked.value) || 0,
                     height: Number(height.value) || 0,
-                    claimed: Number(totalAmount.value) || 0 - (
-                        (Number(unlocked.value) || 0) + (Number(locked.value) || 0)
-                    )
                 };
+
                 acc.vestings.push(vesting);
-                acc.totalVesting += vesting.totalAmount;
-                acc.claimed += vesting.claimed;
+                acc.reamainAmount = vesting.totalReaminAmount;
                 acc.locked += vesting.locked;
                 acc.unlocked += vesting.unlocked;
                 return acc;
-            }, {totalVesting: 0, claimed: 0, locked: 0, unlocked: 0, vestings: []});
+            }, {reamainAmount: 0, claimed: 0, locked: 0, unlocked: 0, vestings: []});
 
             setState({
                 toClaim,
-                totalVesting,
+                reamainAmount,
                 claimed,
                 locked,
                 unlocked,
@@ -85,6 +81,18 @@ export const Vesting = ({ ...props }) => {
     useEffect(() => {
         updateState();
     }, []);
+
+    const onClaim = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            await claimWX();
+            await new Promise((res) => setTimeout(res, 10000));
+            await updateState();
+        } catch (e) {
+
+        }
+    }, []);
+
 
     if (isLoading) {
         return <Container className={'text-center mt-5'}>
@@ -115,15 +123,8 @@ export const Vesting = ({ ...props }) => {
             <hr/>
         </Row>
         <Row>
-            <Col>Total vested</Col>
-            <Col md={2}>{state.totalVesting / 10 ** 8} WX</Col>
-        </Row>
-        <Row className={'my-2'}>
-            <hr/>
-        </Row>
-        <Row>
-            <Col>Claimed</Col>
-            <Col md={2}>{state.claimed / 10 ** 8} WX</Col>
+            <Col>Remain amount</Col>
+            <Col md={2}>{state.reamainAmount / 10 ** 8} WX</Col>
         </Row>
         <Row className={'my-2'}>
             <hr/>
@@ -137,7 +138,7 @@ export const Vesting = ({ ...props }) => {
         </Row>
         <Row>
             <Col>Claim unlocked</Col>
-            <Col md={2}><Button size={'sm'} disabled={!state.toClaim}>Claim</Button></Col>
+            <Col md={2}><Button size={'sm'} disabled={!state.toClaim} onClick={onClaim}>Claim</Button></Col>
         </Row>
     </Container>;
 };

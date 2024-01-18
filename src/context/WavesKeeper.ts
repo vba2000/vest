@@ -35,5 +35,19 @@ export const keeperLogin = async () => {
 
 export const claim = async (nodeUrl: string, vestingContract: string) => {
     const keeper = getKeeper();
-
+    await keeper.signAndPublishTransaction({
+        type: 16,
+        data: {
+            fee: {
+                tokens: '0.05',
+                assetId: 'WAVES',
+            },
+            dApp: vestingContract,
+            call: {
+                function: 'claimAll',
+                args: [
+                ],
+            },
+            payment: [],
+        }});
 };
